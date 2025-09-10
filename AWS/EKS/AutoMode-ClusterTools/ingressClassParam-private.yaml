@@ -1,0 +1,8 @@
+apiVersion: eks.amazonaws.com/v1
+kind: IngressClassParams
+metadata:
+  name: alb-private
+spec:
+  scheme: internal
+  group:
+    name: env-private
