@@ -5,10 +5,10 @@
 #
 
 # --- Configuration Parameters ---
-VPC_ID="vpc-05a351b228737e586"
-REGION="us-east-2"
-DEST_CIDR="172.29.0.0/16"
-PEERING_ID="pcx-04a750be321af0641"
+VPC_ID="vpc-x"
+REGION="us-east-1"
+DEST_CIDR="x.x.x.x/16"
+PEERING_ID="pcx-x"
 NAME_FILTER="*Private*"
 
 # --- Script Setup ---
