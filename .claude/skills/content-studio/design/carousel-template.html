@@ -1,0 +1,380 @@
+<title>TEMA DEL CARRUSEL</title>
+<!-- PLANTILLA DE DISEÑO dev.luchops. Copiar <link> y <style> TAL CUAL; solo cambia el contenido de los slides. Las secciones de ejemplo muestran cada componente (cover, rows, prq, choice/alert, crumb+cli+steps, url, bul, api+note, limits, check, sig, shot, hero). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: horizontal strip of 4:5 slides (LinkedIn portrait). Motif: region codes as "departure" tags,
+   primary region solid, replica regions outlined. Type scales with the slide via container units. */
+:root {
+  --bg: #e7ebf0;          /* page ground, cool slate */
+  --slide: #f7f9fb;       /* slide paper */
+  --ink: #0f1b2d;         /* navy ink */
+  --muted: #4d5b70;
+  --line: #c9d1dc;
+  --accent: #2346d8;      /* cobalt: primary region / key actions */
+  --accent-soft: #dfe5fb;
+  --warn: #a8570a;        /* amber: caveats */
+  --warn-soft: #f6e8d6;
+  --ok: #17774d;
+  --code-bg: #0f1b2d;
+  --code-fg: #e4ebf5;
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a111c; --slide: #121c2b; --ink: #e8eef7; --muted: #9fb0c6; --line: #2a3a52;
+    --accent: #7b95ff; --accent-soft: #1d2a55; --warn: #f0a55a; --warn-soft: #3a2a17; --ok: #5fd39c;
+    --code-bg: #060b13; --code-fg: #dbe5f3; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a111c; --slide: #121c2b; --ink: #e8eef7; --muted: #9fb0c6; --line: #2a3a52;
+  --accent: #7b95ff; --accent-soft: #1d2a55; --warn: #f0a55a; --warn-soft: #3a2a17; --ok: #5fd39c;
+  --code-bg: #060b13; --code-fg: #dbe5f3; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); }
+.wrap { padding-inline: 16px; padding-block: 28px 40px; max-width: 1400px; margin: 0 auto; }
+.intro { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; margin-bottom: 18px; }
+.intro h1 { font-family: var(--display); font-size: 1.25rem; margin: 0; }
+.intro p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+.strip { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 14px; }
+.slide {
+  flex: 0 0 min(100%, 520px); aspect-ratio: 4 / 5; max-width: 100%;
+  scroll-snap-align: center; container-type: inline-size;
+  background: var(--slide); border: 1px solid var(--line); border-radius: 6px;
+  position: relative; overflow: hidden; display: flex; flex-direction: column;
+  padding: 8cqw 8cqw 6cqw;
+}
+.slide > .top { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 2.6cqw; color: var(--muted); letter-spacing: .04em; }
+.slide > .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 2.6cqw; color: var(--muted); border-top: 1px solid var(--line); padding-top: 3cqw; }
+.handle { color: var(--ink); font-weight: 600; }
+.body { display: flex; flex-direction: column; gap: 4cqw; margin-top: 7cqw; }
+.eyebrow { font-family: var(--mono); font-size: 2.9cqw; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+h2 { font-family: var(--display); font-weight: 800; font-size: 7.6cqw; line-height: 1.04; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+h2 em { font-style: normal; color: var(--accent); }
+.lead { font-size: 4cqw; line-height: 1.4; color: var(--muted); margin: 0; }
+.lead b { color: var(--ink); font-weight: 600; }
+code, .mono { font-family: var(--mono); }
+
+/* region tags */
+.regions { display: flex; flex-wrap: wrap; align-items: center; gap: 2.4cqw; }
+.tag { font-family: var(--mono); font-size: 3.6cqw; font-weight: 600; padding: 1.6cqw 3cqw; border-radius: 99px; border: .5cqw solid var(--accent); }
+.tag.primary { background: var(--accent); color: var(--slide); }
+.tag.replica { color: var(--accent); border-style: dashed; }
+.arrow { font-family: var(--mono); color: var(--muted); font-size: 4cqw; }
+
+/* cover */
+.cover h2 { font-size: 10.4cqw; }
+.cover .body { margin-top: 12cqw; gap: 6cqw; }
+
+/* rows */
+.rows { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 3cqw; align-items: baseline; padding: 2.6cqw 0; border-bottom: 1px solid var(--line); font-size: 3.6cqw; }
+.row .dir { font-family: var(--mono); font-size: 2.8cqw; color: var(--muted); text-align: right; }
+.row b { font-weight: 600; }
+
+/* steps */
+.steps { display: flex; flex-direction: column; gap: 3.4cqw; }
+.step { display: grid; grid-template-columns: 8cqw 1fr; gap: 3cqw; align-items: start; font-size: 3.7cqw; line-height: 1.35; }
+.step .n { font-family: var(--display); font-weight: 800; font-size: 6cqw; line-height: 1; color: var(--accent); }
+.step.skip { color: var(--muted); }
+.step.skip .n { color: var(--line); }
+.step small { display: block; color: var(--muted); font-size: 3cqw; margin-top: .6cqw; }
+.cli { background: var(--code-bg); color: var(--code-fg); font-family: var(--mono); font-size: 2.75cqw; line-height: 1.5; padding: 3cqw 3.4cqw; border-radius: 4px; white-space: pre; overflow: hidden; }
+.cli .c { color: #8fa3bf; }
+
+/* url compare */
+.url { font-family: var(--mono); font-size: 3.1cqw; padding: 3cqw 3.4cqw; border-radius: 4px; word-break: break-all; line-height: 1.4; }
+.url.no { background: var(--warn-soft); color: var(--ink); text-decoration: line-through; text-decoration-color: var(--warn); }
+.url.yes { background: var(--accent-soft); color: var(--ink); }
+.url .lbl { display: block; text-decoration: none; font-size: 2.5cqw; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1.2cqw; font-weight: 600; }
+.url.no .lbl { color: var(--warn); display: inline-block; }
+.url.yes .lbl { color: var(--accent); }
+
+/* api matrix */
+.api { display: grid; grid-template-columns: 1fr auto; font-size: 3.5cqw; border-top: 1px solid var(--line); }
+.api > div { padding: 2.4cqw 0; border-bottom: 1px solid var(--line); }
+.api .v { font-family: var(--mono); font-size: 2.9cqw; text-align: right; font-weight: 600; }
+.v.r { color: var(--warn); } .v.all { color: var(--ok); } .v.none { color: var(--warn); }
+.note { background: var(--warn-soft); border-radius: 4px; padding: 3cqw 3.4cqw; font-size: 3.4cqw; line-height: 1.4; }
+.note b { color: var(--warn); }
+
+/* limits */
+.limits { display: grid; grid-template-columns: 1fr 1fr; gap: 3cqw; }
+.lim { border: 1px solid var(--line); border-radius: 4px; padding: 3cqw; display: flex; flex-direction: column; gap: 1.2cqw; }
+.lim .k { font-family: var(--display); font-weight: 800; font-size: 6.4cqw; line-height: 1; }
+.lim .d { font-size: 3cqw; color: var(--muted); line-height: 1.35; }
+
+/* checklist */
+.check { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2.2cqw; font-size: 3.4cqw; line-height: 1.32; }
+.check li { display: grid; grid-template-columns: 5.4cqw 1fr; gap: 2.4cqw; }
+.box { width: 4.2cqw; height: 4.2cqw; border: .5cqw solid var(--accent); border-radius: 1cqw; margin-top: .6cqw; }
+
+/* cta */
+.links { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.links a { display: grid; grid-template-columns: 30cqw 1fr; gap: 3cqw; padding: 2.8cqw 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; font-size: 3.6cqw; }
+.links a span:first-child { font-family: var(--mono); font-size: 2.8cqw; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding-top: .5cqw; }
+.links a:hover span:last-child, .links a:focus-visible span:last-child { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.big-handle { font-family: var(--display); font-weight: 800; font-size: 9cqw; letter-spacing: -.02em; color: var(--accent); }
+
+.hint { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+/* Instagram additions */
+.prq { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.prq > div { display: grid; grid-template-columns: 27cqw 1fr; gap: 3cqw; padding: 2.4cqw 0; border-bottom: 1px solid var(--line); font-size: 3.3cqw; line-height: 1.35; }
+.prq .k { font-family: var(--mono); font-size: 2.7cqw; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding-top: .4cqw; }
+.quote { font-size: 3.9cqw; line-height: 1.4; border-left: .8cqw solid var(--accent); padding-left: 3.4cqw; margin: 0; font-style: italic; }
+.quote span { display: block; font-style: normal; font-family: var(--mono); font-size: 2.6cqw; color: var(--muted); margin-top: 1.6cqw; }
+.alert { border: .4cqw solid var(--warn); border-radius: 4px; padding: 3cqw 3.4cqw; font-size: 3.2cqw; line-height: 1.4; background: var(--warn-soft); }
+.alert .t { display: block; font-family: var(--mono); font-size: 2.5cqw; text-transform: uppercase; letter-spacing: .06em; color: var(--warn); font-weight: 600; margin-bottom: 1.2cqw; }
+.choice { display: flex; flex-direction: column; gap: 1.8cqw; }
+.opt { display: flex; align-items: center; gap: 2.4cqw; font-size: 3.4cqw; padding: 2.2cqw 3cqw; border: 1px solid var(--line); border-radius: 4px; }
+.opt.on { border: .5cqw solid var(--accent); background: var(--accent-soft); font-weight: 600; }
+.radio { width: 3.6cqw; height: 3.6cqw; border-radius: 50%; border: .5cqw solid var(--muted); flex: none; }
+.opt.on .radio { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 45%, transparent 50%); }
+.opt small { margin-left: auto; font-family: var(--mono); font-size: 2.5cqw; color: var(--muted); font-weight: 400; }
+.crumb { font-family: var(--mono); font-size: 2.9cqw; color: var(--muted); line-height: 1.5; }
+.crumb b { color: var(--ink); }
+.bul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2.8cqw; font-size: 3.6cqw; line-height: 1.38; }
+.bul li { display: grid; grid-template-columns: 4cqw 1fr; gap: 2cqw; }
+.bul li::before { content: ""; width: 2cqw; height: 2cqw; background: var(--accent); border-radius: 50%; margin-top: 1.5cqw; }
+.cover .sub { font-family: var(--display); font-weight: 700; font-size: 6cqw; line-height: 1.12; color: var(--muted); margin: 0; text-wrap: balance; }
+.sig { font-family: var(--mono); font-size: 3.1cqw; line-height: 1.75; white-space: pre; color: var(--ink); background: var(--accent-soft); border-radius: 4px; padding: 3.4cqw 4cqw; overflow: hidden; }
+.bio { font-family: var(--display); font-weight: 800; font-size: 6.2cqw; line-height: 1.1; }
+.bio em { font-style: normal; color: var(--accent); }
+/* shot: official screenshot/diagram. Frame sets the crop via aspect-ratio; img uses object-position (or width/margins to zoom) */
+.shot { margin: 0; display: flex; flex-direction: column; gap: 1.4cqw; }
+.shot .frame { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: #fff; }
+.shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.shot figcaption { font-family: var(--mono); font-size: 2.4cqw; color: var(--muted); line-height: 1.4; }
+/* hero: inline SVG flow diagram for covers, drawn only with tokens */
+.hero { display: block; width: 100%; height: auto; overflow: visible; }
+.hero .n { fill: var(--slide); stroke: var(--line); stroke-width: 1.5; }
+.hero .d { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.hero .g { fill: var(--accent); }
+.hero .w { fill: none; stroke: var(--accent); stroke-width: 2.5; }
+.hero .ah, .hero .dot { fill: var(--accent); }
+.hero text { font-family: var(--mono); fill: var(--ink); }
+.hero .c { text-anchor: middle; }
+.hero .gt { font-family: var(--display); font-weight: 800; font-size: 32px; fill: var(--slide); }
+.hero .gs { font-size: 14px; fill: var(--accent-soft); }
+.hero .h { font-size: 17px; font-weight: 600; }
+.hero .s { font-family: var(--body); font-size: 14px; fill: var(--muted); }
+.hero .a { fill: var(--accent); font-weight: 600; }
+</style>
+
+<div class="wrap">
+  <div class="intro">
+    <h1>Carrusel Instagram · IAM Identity Center multi-Region</h1>
+    <p>12 slides 4:5 · deslizá horizontalmente</p>
+  </div>
+
+  <div class="strip">
+
+    <!-- 1 cover -->
+    <section class="slide cover" aria-label="Slide 1">
+      <div class="top"><span>AWS · IAM IDENTITY CENTER</span><span>01/12</span></div>
+      <div class="body">
+        <div class="eyebrow">Identity Center directory · multi-Region</div>
+        <h2>Cuando una caída regional <em>no previene el acceso</em></h2>
+        <p class="lead">Tu directorio nativo de Identity Center ahora se puede replicar a otras regiones de AWS.</p>
+        <div class="regions">
+          <span class="tag primary">us-east-1</span><span class="arrow">→</span>
+          <span class="tag replica">eu-west-1</span>
+        </div>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>deslizá →</span></div>
+    </section>
+
+    <!-- 2 announcement -->
+    <section class="slide" aria-label="Slide 2">
+      <div class="top"><span>QUÉ ANUNCIÓ AWS</span><span>02/12</span></div>
+      <div class="body">
+        <h2>Antes era solo con IdP externo. <em>Ahora también con el directorio nativo.</em></h2>
+        <p class="quote">"IAM Identity Center users continue to have access to their AWS accounts using the already provisioned entitlements in the additional Regions."<span>AWS What's New · 29 jul 2026</span></p>
+        <div class="rows">
+          <div class="row"><span>Disponible en</span><b>17 regiones comerciales</b></div>
+          <div class="row"><span>Tipo de instancia</span><b>Organization instance</b></div>
+          <div class="row"><span>Requisito</span><b>CMK multi-Region</b></div>
+          <div class="row"><span>Costo</span><b>Gratis (KMS se cobra aparte)</b></div>
+        </div>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>Fuente: AWS What's New</span></div>
+    </section>
+
+    <!-- 3 prerequisites -->
+    <section class="slide" aria-label="Slide 3">
+      <div class="top"><span>PREREQUISITOS</span><span>03/12</span></div>
+      <div class="body">
+        <h2>Antes de empezar, <em>revisá esto</em></h2>
+        <div class="prq">
+          <div><span class="k">Instancia</span><span>Solo <b>organization instance</b>. No funciona en account instances.</span></div>
+          <div><span class="k">Identity source</span><span>IdP externo o <b>Identity Center directory</b>. No funciona con Active Directory.</span></div>
+          <div><span class="k">Regiones</span><span>Solo comerciales habilitadas por defecto. <b style="white-space:nowrap">Opt-in no</b>.</span></div>
+          <div><span class="k">Cifrado</span><span><b>Customer managed KMS key multi-Region</b> en la misma cuenta.</span></div>
+          <div><span class="k">Apps de AWS</span><span>Tienen que soportar CMK y, si las desplegás en otra región, ese tipo de despliegue.</span></div>
+        </div>
+        <p class="lead">Con Identity Center directory <b>no necesitás múltiples ACS URLs</b>. Ese requisito es solo para IdP externo.</p>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>Cuota: 6 regiones por instancia (ampliable)</span></div>
+    </section>
+
+    <!-- 4 KMS -->
+    <section class="slide" aria-label="Slide 4">
+      <div class="top"><span>PASO 1 · KMS</span><span>04/12</span></div>
+      <div class="body">
+        <h2>Todo empieza por la <em>KMS key</em></h2>
+        <div class="choice">
+          <div class="opt"><span class="radio"></span>Single-region key</div>
+          <div class="opt on"><span class="radio"></span>Multi-region key<small>Advanced options · Regionality</small></div>
+        </div>
+        <p class="lead">Una key creada como single-Region <b>no se puede convertir</b> en multi-Region. Si no tenés una, creá una nueva y replicala en la región destino.</p>
+        <div class="alert"><span class="t">Si usás una AWS owned key</span>La consola te avisa que necesitás una customer managed multi-Region key y no te deja habilitar el multi-Region.</div>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>KMS no sincroniza la key policy entre regiones</span></div>
+    </section>
+
+    <!-- 5 steps 2-5 -->
+    <section class="slide" aria-label="Slide 5">
+      <div class="top"><span>PASOS 2 A 5</span><span>05/12</span></div>
+      <div class="body">
+        <h2>Agregá la región y <em>esperá ACTIVE</em></h2>
+        <div class="crumb"><b>Settings</b> → Management → Regions for IAM Identity Center → <b>Add Region</b></div>
+        <div class="cli"><span class="c"># o por CLI</span>
+aws sso-admin add-region \
+  --instance-arn arn:aws:sso:::instance/ssoins-… \
+  --region-name eu-west-1</div>
+        <div class="steps">
+          <div class="step skip"><span class="n">3</span><span>ACS URLs en el IdP.<small>No aplica con Identity Center directory.</small></span></div>
+          <div class="step"><span class="n">4</span><span>Si tu red filtra dominios, sumá los del portal regional a la allow-list.</span></div>
+          <div class="step"><span class="n">5</span><span>Pasale a tu equipo la URL del portal regional.</span></div>
+        </div>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>Replicación asincrónica, cambios en segundos</span></div>
+    </section>
+
+    <!-- 6 replicated -->
+    <section class="slide" aria-label="Slide 6">
+      <div class="top"><span>QUÉ SE REPLICA</span><span>06/12</span></div>
+      <div class="body">
+        <h2>Todo lo que define <em>quién entra a qué</em></h2>
+        <div class="rows">
+          <div class="row"><span><b>Usuarios, grupos, membresías</b></span><span class="dir">primaria → adicionales</span></div>
+          <div class="row"><span><b>Permission sets y asignaciones</b></span><span class="dir">primaria → adicionales</span></div>
+          <div class="row"><span><b>Configuración</b></span><span class="dir">primaria → adicionales</span></div>
+          <div class="row"><span><b>Trusted token issuers</b></span><span class="dir">primaria → adicionales</span></div>
+          <div class="row"><span><b>Apps y sus asignaciones</b></span><span class="dir">región de la app → resto</span></div>
+          <div class="row"><span><b>Sesiones</b></span><span class="dir">región de origen → resto</span></div>
+        </div>
+        <p class="lead">Mismos IDs en todas las regiones. <b>No</b> replica los datos de las apps de AWS ni las mueve de región.</p>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>Los roles IAM provisionados no cambian</span></div>
+    </section>
+
+    <!-- 7 url trap -->
+    <section class="slide" aria-label="Slide 7">
+      <div class="top"><span>LA TRAMPA</span><span>07/12</span></div>
+      <div class="body">
+        <h2>En la región adicional, <em>tu portal tiene otra URL</em></h2>
+        <div class="url no"><span class="lbl">No existe en regiones adicionales</span><br>https://miempresa.awsapps.com/start</div>
+        <div class="url yes"><span class="lbl">IPv4 · sin /start</span>https://ssoins-111111h2222j33pp.eu-west-1.portal.amazonaws.com</div>
+        <div class="url yes"><span class="lbl">Dual-stack · sin /start</span>https://ssoins-111111h2222j33pp.portal.eu-west-1.app.aws</div>
+        <p class="lead">Ni el endpoint clásico ni tu custom alias de <b>awsapps.com</b> existen fuera de la primaria.</p>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>View all AWS access portal URLs</span></div>
+    </section>
+
+    <!-- 8 sessions & cli -->
+    <section class="slide" aria-label="Slide 8">
+      <div class="top"><span>SESIONES Y CLI</span><span>08/12</span></div>
+      <div class="body">
+        <h2>Las sesiones viajan. <em>La CLI no.</em></h2>
+        <ul class="bul">
+          <li><span>Las sesiones se replican desde la región donde se originaron. El sign-out y la revocación también.</span></li>
+          <li><span>Un admin puede revocar sesiones desde una región adicional.</span></li>
+          <li><span>La autorización de la AWS CLI <b>no se replica</b>: armá un perfil "DR" por región.</span></li>
+        </ul>
+        <div class="cli" style="font-size:2.1cqw">[sso-session corp-dr]
+sso_start_url = https://ssoins-….eu-west-1.portal.amazonaws.com
+sso_region = eu-west-1</div>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>Ejemplo ilustrativo de ~/.aws/config</span></div>
+    </section>
+
+    <!-- 9 failover -->
+    <section class="slide" aria-label="Slide 9">
+      <div class="top"><span>EN UN FAILOVER</span><span>09/12</span></div>
+      <div class="body">
+        <h2>Entrás con lo que <em>ya tenías</em></h2>
+        <p class="lead">No hay switch automático: tu equipo entra por la URL regional o por su perfil "DR".</p>
+        <div class="api">
+          <div>Identity Store API</div><div class="v r">solo lectura</div>
+          <div>Identity Center API</div><div class="v r">escritura solo de apps</div>
+          <div>OIDC · Access Portal API</div><div class="v all">todas</div>
+          <div>SCIM API</div><div class="v none">ninguna</div>
+        </div>
+        <div class="note"><b>No es momento de dar accesos nuevos.</b> AWS recomienda además un acceso break-glass para unos pocos usuarios privilegiados.</div>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>APIs soportadas en regiones adicionales</span></div>
+    </section>
+
+    <!-- 10 limits -->
+    <section class="slide" aria-label="Slide 10">
+      <div class="top"><span>RESTRICCIONES</span><span>10/12</span></div>
+      <div class="body">
+        <h2>Lo que conviene saber <em>antes</em></h2>
+        <div class="limits">
+          <div class="lim"><span class="k">Fija</span><span class="d">La primaria no se cambia. Solo se elimina borrando la instancia.</span></div>
+          <div class="lim"><span class="k">6</span><span class="d">Regiones por instancia por defecto, ampliable con Service Quotas.</span></div>
+          <div class="lim"><span class="k">Lejos</span><span class="d">Elegí una región adicional geográficamente lejana a la primaria.</span></div>
+          <div class="lim"><span class="k">20 TPS</span><span class="d">Los throttle limits aplican por región. Identity Store: 20 TPS en cada una.</span></div>
+        </div>
+        <p class="lead">Las regiones adicionales se pueden agregar y quitar cuando quieras.</p>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>Fuente: AWS docs · Quotas</span></div>
+    </section>
+
+    <!-- 11 checklist -->
+    <section class="slide" aria-label="Slide 11">
+      <div class="top"><span>CHECKLIST</span><span>11/12</span></div>
+      <div class="body">
+        <h2>Guardalo para <em>tu próximo sprint</em></h2>
+        <ul class="check">
+          <li><span class="box"></span><span>¿Organization instance? ¿Identity Center directory o IdP externo (sin AD)?</span></li>
+          <li><span class="box"></span><span>¿Ya usás una CMK multi-Region? Si no, ese es el primer paso.</span></li>
+          <li><span class="box"></span><span>¿Tus apps de AWS soportan CMK y regiones adicionales?</span></li>
+          <li><span class="box"></span><span>Replicá la key → <code>add-region</code> → esperá <code>ACTIVE</code>.</span></li>
+          <li><span class="box"></span><span>Allow-lists de firewall con los dominios nuevos.</span></li>
+          <li><span class="box"></span><span>Publicá la URL regional y los perfiles de CLI "DR".</span></li>
+          <li><span class="box"></span><span>Definí un break-glass y probalo antes de necesitarlo.</span></li>
+        </ul>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>guardá este post</span></div>
+    </section>
+
+    <!-- 12 CTA -->
+    <section class="slide" aria-label="Slide 12">
+      <div class="top"><span>SEGUÍ LEYENDO</span><span>12/12</span></div>
+      <div class="body">
+        <p class="bio">El paso a paso completo, con capturas de consola, está en Medium. <em>Link en la bio.</em></p>
+        <div class="sig">━━━━━━━━━━━━━━━━━━━━
+🟧 dev.luchops
+Cloud &amp; DevOps, explicado sin vueltas.
+
+▸ Medium → medium.com/@lucianonicolasloyola
+▸ YouTube → youtube.com/@dev.luchops
+▸ TikTok / Instagram → @dev.luchops
+━━━━━━━━━━━━━━━━━━━━</div>
+        <p class="lead">Seguime para más AWS, DevOps y Cloud en español.</p>
+      </div>
+      <div class="foot"><span class="handle">dev.luchops</span><span>AWS · DevOps · Cloud</span></div>
+    </section>
+
+  </div>
+  <p class="hint">Cada slide es 4:5 (1080×1350) y se lee sola, lista para exportar como imagen.</p>
+</div>
