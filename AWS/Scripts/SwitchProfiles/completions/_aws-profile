@@ -1,0 +1,13 @@
+#compdef aws-profile
+# zsh completion for aws-profile — lists profiles from ~/.aws/config
+# Installed as an autoload file so it survives every compinit call.
+
+local AWS_CONF="${HOME}/.aws/config"
+local -a profiles
+
+# "[profile foo]" -> "foo"
+profiles=(${(f)"$(grep -oP '(?<=\[profile ).*(?=\])' "$AWS_CONF" 2>/dev/null)"})
+# include the [default] stanza if present
+grep -q '^\[default\]' "$AWS_CONF" 2>/dev/null && profiles+=(default)
+
+_describe -t profiles 'AWS profile' profiles

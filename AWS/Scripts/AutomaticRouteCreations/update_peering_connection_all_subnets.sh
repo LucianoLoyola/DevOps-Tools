@@ -1,15 +1,15 @@
 #!/bin/bash
 #
-# Script to add a VPC peering route to all route tables associated
-# with "Private" subnets in a specified VPC.
+# Script to add a VPC peering route to ALL route tables associated
+# with ANY subnet in a specified VPC.
 #
 
 # --- Configuration Parameters ---
-VPC_ID="vpc-x"
+VPC_ID="<vpc-id>"
 REGION="us-east-1"
-DEST_CIDR="x.x.x.x/16"
-PEERING_ID="pcx-x"
-NAME_FILTER="*Private*"
+DEST_CIDR="<destination-cidr>"
+PEERING_ID="<peering-connection-id>"
+# NAME_FILTER removed to target all subnets
 
 # --- Script Setup ---
 # Exit on undefined variable, fail on pipe errors
@@ -18,13 +18,13 @@ set -uo pipefail
 # Common AWS CLI arguments for region and output
 AWS_ARGS="--region ${REGION} --output json"
 
-echo "--- Starting Route Addition Script ---"
+echo "--- Starting Route Addition Script (ALL SUBNETS) ---"
 echo "VPC:         ${VPC_ID}"
 echo "Region:      ${REGION}"
 echo "Destination: ${DEST_CIDR}"
 echo "Peering ID:  ${PEERING_ID}"
-echo "Subnet Name: ${NAME_FILTER}"
-echo "--------------------------------------"
+echo "Scope:       ALL Subnets in VPC"
+echo "----------------------------------------------------"
 
 # --- 1. Find the VPC's Main Route Table ID ---
 echo "1. Finding Main Route Table ID for ${VPC_ID}..."
@@ -39,24 +39,24 @@ fi
 echo "   Found Main Route Table: ${MAIN_RTB_ID}"
 
 
-# --- 2. Find all 'Private' subnet IDs ---
-echo "2. Finding subnets with name filter '${NAME_FILTER}'..."
+# --- 2. Find ALL subnet IDs in the VPC ---
+echo "2. Finding all subnets in VPC..."
 # Read the list of subnet IDs into a bash array
-mapfile -t PRIVATE_SUBNET_IDS < <(aws ec2 describe-subnets $AWS_ARGS \
-  --filters "Name=vpc-id,Values=${VPC_ID}" "Name=tag:Name,Values=${NAME_FILTER}" \
+# UPDATED: Removed the Name tag filter, now only filters by VPC ID
+mapfile -t ALL_SUBNET_IDS < <(aws ec2 describe-subnets $AWS_ARGS \
+  --filters "Name=vpc-id,Values=${VPC_ID}" \
   | jq -r '.Subnets[].SubnetId')
 
-if [ ${#PRIVATE_SUBNET_IDS[@]} -eq 0 ]; then
-  echo "   No subnets found with name filter '${NAME_FILTER}'. Exiting."
+if [ ${#ALL_SUBNET_IDS[@]} -eq 0 ]; then
+  echo "   No subnets found in this VPC. Exiting."
   exit 0
 fi
-echo "   Found ${#PRIVATE_SUBNET_IDS[@]} matching subnets."
+echo "   Found ${#ALL_SUBNET_IDS[@]} total subnets."
 
 
 # --- 3. Get all explicit route table associations ---
 echo "3. Fetching explicit route table associations..."
 # Creates a single JSON object like: {"subnet-id-1": "rtb-id-A", "subnet-id-2": "rtb-id-B"}
-# This is much more efficient than calling `describe-route-tables` per subnet.
 EXPLICIT_ASSOCIATIONS=$(aws ec2 describe-route-tables $AWS_ARGS \
   --filters "Name=vpc-id,Values=${VPC_ID}" \
   | jq -r '[.RouteTables[].Associations[] | select(.SubnetId)] | map({(.SubnetId): .RouteTableId}) | add')
@@ -68,9 +68,9 @@ fi
 
 # --- 4. Create a list of unique route table IDs to update ---
 echo "4. Determining target route tables..."
-TARGET_RTB_IDS_LIST="" # We'll build a newline-separated string first
+TARGET_RTB_IDS_LIST="" 
 
-for subnet_id in "${PRIVATE_SUBNET_IDS[@]}"; do
+for subnet_id in "${ALL_SUBNET_IDS[@]}"; do
   # Use jq to query our association map
   explicit_rtb=$(echo "${EXPLICIT_ASSOCIATIONS}" | jq -r --arg SUBNET_ID "$subnet_id" '.[$SUBNET_ID]')
 
