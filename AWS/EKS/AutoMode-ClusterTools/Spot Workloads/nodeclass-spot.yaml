@@ -1,0 +1,25 @@
+apiVersion: eks.amazonaws.com/v1
+kind: NodeClass
+metadata:
+  name: spot-nodeclass
+spec:
+  # IAM role - use the same role as the default NodeClass created by EKS Auto Mode
+  # Get this with: kubectl get nodeclass default -o jsonpath='{.spec.role}'
+  role: "<node-role-name>"
+  
+  # Subnet selector - automatically finds subnets tagged for the cluster
+  subnetSelectorTerms:
+    - tags:
+        Name: "private-subnet"
+        kubernetes.io/role/internal-elb: "1"
+  
+  # Security group selector - automatically finds cluster security groups
+  securityGroupSelectorTerms:
+    - tags:
+        karpenter.sh/discovery: "<cluster-name>"
+  
+  # Storage configuration - optimized for spot instances
+  ephemeralStorage:
+    size: "80Gi"
+
+
